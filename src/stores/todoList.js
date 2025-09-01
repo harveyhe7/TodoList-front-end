@@ -5,7 +5,13 @@ import todoItems from '../todoItems.json';
 export const useTodoStore = create((set, get) => ({
   todos: todoItems,
   isFilter: false,
-  toggleFilter: () => set(state => ({ isFilter: !state.isFilter })),
+  setFilter: () => set(state => ({ isFilter: !state.isFilter })),
+  setTodos: (next) => set(state => ({
+      todos:
+        typeof next === 'function'
+          ? next(state.todos)          // 支持函数式更新
+          : next
+    })),
   toggleTodo: (id) =>
     set(state => ({
       todos: state.todos.map(t =>

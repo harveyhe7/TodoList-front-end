@@ -1,6 +1,7 @@
 import { useTodoStore } from '../stores/todoList';
 import styles from './TodoList.module.css';
-
+import { useEffect } from 'react';
+import axios from 'axios';
 function TodoItem({ title, completed, onToggle }) {
     const itemClassName = `${styles.item} ${completed ? styles.checked : ''}`;
     return (
@@ -20,6 +21,11 @@ export default function TodoList() {
     const setFilter = useTodoStore(s => s.setFilter);
     const todos = useTodoStore(s => s.todos);
     const setTodos = useTodoStore(s => s.setTodos);
+    const fetchTodos = useTodoStore(s => s.fetchTodos);
+
+    useEffect(() => {
+        fetchTodos();
+    }, []);
 
     const filteredItems = isFilter ? todos.filter(item => !item.completed) : todos;
 

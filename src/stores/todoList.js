@@ -1,11 +1,18 @@
 import { create } from 'zustand';
 import todoItems from '../assets/todoItems.json';
 import axios from 'axios';
+import api from '../services/Axios';
 
 // Todo 状态仓库
 export const useTodoStore = create((set, get) => ({
-  todos: todoItems,
+  todos: [],
   isFilter: false,
+
+  fetchTodos: async () => {
+    const { data } = await api.get('/todos');
+    set({ todos: data });
+  },
+
   setFilter: () => set(state => ({ isFilter: !state.isFilter })),
   setTodos: (next) => set(state => ({
       todos:

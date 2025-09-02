@@ -1,5 +1,6 @@
 import { create } from 'zustand';
-import todoItems from '../todoItems.json';
+import todoItems from '../assets/todoItems.json';
+import axios from 'axios';
 
 // Todo 状态仓库
 export const useTodoStore = create((set, get) => ({

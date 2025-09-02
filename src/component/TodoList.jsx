@@ -1,4 +1,4 @@
-import { useTodoStore } from './stores/todoList';
+import { useTodoStore } from '../stores/todoList';
 import styles from './TodoList.module.css';
 
 function TodoItem({ title, completed, onToggle }) {

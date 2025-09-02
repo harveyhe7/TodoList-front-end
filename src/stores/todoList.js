@@ -7,19 +7,49 @@ import api from '../services/Axios';
 export const useTodoStore = create((set, get) => ({
   todos: [],
   isFilter: false,
-
+  
   fetchTodos: async () => {
-    const { data } = await api.get('/todos');
-    set({ todos: data });
+    const response = await api.get('/todos');
+    // 赋值todos
+    set({ todos: response.data });
+    console.log(data);
   },
 
   setFilter: () => set(state => ({ isFilter: !state.isFilter })),
-  setTodos: (next) => set(state => ({
-      todos:
-        typeof next === 'function'
-          ? next(state.todos)          // 支持函数式更新
-          : next
-    })),
+  // addTodos: (next) => set(state => ({
+  //     todos:
+  //       typeof next === 'function'
+  //         ? next(state.todos)          // 支持函数式更新
+  //         : next
+  //   })),
+  
+// ...existing code...
+  //         : next
+  //   })),
+
+  addTodos: async (title) => {
+    if (!title) return;
+    try {
+      // 1. 准备要发送到后端的 todo 对象作为请求体
+      const newTodoPayload = {
+        title,
+        completed: false
+      };
+
+      // 2. 发送 POST 请求，并将请求体传给后端
+      // 我们假设后端会返回创建好的 todo 对象，包含新的 id
+      const response = await api.post('/todos', newTodoPayload);
+
+      // 3. 使用从服务器返回的完整 todo 对象 (response.data) 来更新状态
+      set(state => ({
+        todos: [...state.todos, response.data]
+      }));
+    } catch (error) {
+      console.error('Error adding todo:', error);
+    }
+  },
+
+
   toggleTodo: (id) =>
     set(state => ({
       todos: state.todos.map(t =>
@@ -35,5 +65,16 @@ export const useTodoStore = create((set, get) => ({
   clearCompleted: () =>
     set(state => ({
       todos: state.todos.filter(t => !t.completed)
-    }))
+    })),
+
+  deleteTodo: async (id) => {
+    try {
+      await api.delete(`/todos/${id}`);
+      set(state => ({
+        todos: state.todos.filter(t => t.id !== id)
+      }));
+    } catch (error) {
+      console.error('Error deleting todo:', error);
+    }
+  }
 }));

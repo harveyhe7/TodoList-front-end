@@ -7,12 +7,11 @@ import api from '../services/Axios';
 export const useTodoStore = create((set, get) => ({
   todos: [],
   isFilter: false,
-  
+
   fetchTodos: async () => {
     const response = await api.get('/todos');
     // 赋值todos
     set({ todos: response.data });
-    console.log(data);
   },
 
   setFilter: () => set(state => ({ isFilter: !state.isFilter })),
@@ -22,8 +21,8 @@ export const useTodoStore = create((set, get) => ({
   //         ? next(state.todos)          // 支持函数式更新
   //         : next
   //   })),
-  
-// ...existing code...
+
+  // ...existing code...
   //         : next
   //   })),
 
@@ -50,12 +49,25 @@ export const useTodoStore = create((set, get) => ({
   },
 
 
-  toggleTodo: (id) =>
-    set(state => ({
-      todos: state.todos.map(t =>
-        t.id === id ? { ...t, completed: !t.completed } : t
-      )
-    })),
+  toggleTodo: async (id) => {
+    const todo = get().todos.find(t => t.id === id);
+    if (!todo) return;
+    const newCompletedStatus = !todo.completed;
+    const updatedTodoPayload = {
+      ...todo,
+      completed: newCompletedStatus
+    };
+    try {
+      await api.patch(`/todos/${id}`, updatedTodoPayload);
+      set(state => ({
+        todos: state.todos.map(t =>
+          t.id === id ? { ...t, completed: !t.completed } : t
+        )
+      }));
+    } catch (error) {
+      console.error('Error toggling todo:', error);
+    }
+  },
   // 派生数据可用函数方式获取
   getFilteredTodos: () => {
     const { isFilter, todos } = get();

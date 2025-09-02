@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-    baseURL: 'https://jsonplaceholder.typicode.com'
+    baseURL: '/', // 代理到后端服务
 });
 // 请求拦截器
 api.interceptors.request.use(config => {
@@ -13,6 +13,16 @@ api.interceptors.request.use(config => {
 }, error => {
     return Promise.reject(error);
 });
+
+// 响应拦截器
+api.interceptors.response.use(response => {
+    return response;
+}, error => {
+    // 统一错误处理
+    console.alert('请求出错: ' + error.message);
+    return Promise.reject(error);
+}
+);
 
 export default api;
 

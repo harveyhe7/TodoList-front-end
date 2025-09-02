@@ -8,10 +8,16 @@ export const useTodoStore = create((set, get) => ({
   todos: [],
   isFilter: false,
 
-  fetchTodos: async () => {
-    const response = await api.get('/todos');
-    // 赋值todos
-    set({ todos: response.data });
+  fetchTodos: async (page=1,size=5) => {
+    try {
+      const params = new URLSearchParams({ page, size });
+      const response = await api.get('/todos?' + params.toString());
+      // 赋值todos
+      set({ todos: response.data });
+    } catch (error) {
+      console.error('Error fetching todos:', error);
+      set({ todos: [] }); // 出错时清空列表
+    }
   },
 
   setFilter: () => set(state => ({ isFilter: !state.isFilter })),
@@ -67,11 +73,6 @@ export const useTodoStore = create((set, get) => ({
     } catch (error) {
       console.error('Error toggling todo:', error);
     }
-  },
-  // 派生数据可用函数方式获取
-  getFilteredTodos: () => {
-    const { isFilter, todos } = get();
-    return isFilter ? todos.filter(t => !t.completed) : todos;
   },
 
   clearCompleted: () =>

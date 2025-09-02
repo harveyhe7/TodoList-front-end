@@ -19,7 +19,7 @@ api.interceptors.response.use(response => {
     return response;
 }, error => {
     // 统一错误处理
-    console.alert('请求出错: ' + error.message);
+    console.assert(false, 'API Error:', error);
     return Promise.reject(error);
 }
 );

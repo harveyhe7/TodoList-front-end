@@ -1,9 +1,10 @@
 import { useTodoStore } from '../stores/todoList';
 import styles from './TodoList.module.css';
-import { useEffect } from 'react';
+import { use, useEffect } from 'react';
 import ToDoListCount from './ToDoListCount.jsx'
 import ClearCompletedTodo from './ClearCompletedTodo.jsx'
 import AddTodo from './AddTodo.jsx';
+import { useSearchParams } from "react-router";
 import axios from 'axios';
 function TodoItem({ title, completed, onToggle, onDelete }) {
     const itemClassName = `${styles.item} ${completed ? styles.checked : ''}`;
@@ -27,13 +28,29 @@ export default function TodoList() {
     const addTodos = useTodoStore(s => s.addTodos);
     const fetchTodos = useTodoStore(s => s.fetchTodos);
     const deleteTodo = useTodoStore(s => s.deleteTodo);
+    const [searchParams, setSearchParams] = useSearchParams();
+
+    const page = parseInt(searchParams.get('page') || '1', 10);
+    const size = parseInt(searchParams.get('size') || '5', 10);
+
     console.log(todos)
     useEffect(() => {
-        fetchTodos();
-    }, []);
+        fetchTodos(page, size);
+    }, [page, size, fetchTodos]);
 
-    const filteredItems = isFilter ? todos.filter(item => !item.completed) : todos;
+        const handlePreviousPage = () => {
+        if (page > 1) {
+            setSearchParams({ page: page - 1, size });
+        }
+    };
 
+    const handleNextPage = () => {
+        if (todos.length === size) {
+            setSearchParams({ page: page + 1, size });
+        }
+    };
+
+    const filteredItems = isFilter ? todos.filter(t => !t.completed) : todos;
     return (
         <section>
             <h1>Sally Ride 的 Todo 清单</h1>
@@ -49,6 +66,11 @@ export default function TodoList() {
                     <TodoItem key={item.id} {...item} onToggle={() => toggleTodo(item.id)} onDelete={() => deleteTodo(item.id)} />
                 )}
             </ul>
+            <div style={{ marginTop: '20px' }}>
+                <button onClick={handlePreviousPage} disabled={page <= 1}>上一页</button>
+                <span style={{ margin: '0 10px' }}>第 {page} 页</span>
+                <button onClick={handleNextPage} disabled={todos.length < size}>下一页</button>
+            </div>
             <ClearCompletedTodo />
         </section>
     );

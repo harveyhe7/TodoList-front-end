@@ -3,8 +3,9 @@ import styles from './TodoList.module.css';
 import { useEffect } from 'react';
 import ToDoListCount from './ToDoListCount.jsx'
 import ClearCompletedTodo from './ClearCompletedTodo.jsx'
+import AddTodo from './AddTodo.jsx';
 import axios from 'axios';
-function TodoItem({ title, completed, onToggle }) {
+function TodoItem({ title, completed, onToggle, onDelete }) {
     const itemClassName = `${styles.item} ${completed ? styles.checked : ''}`;
     return (
         <li className={itemClassName}>
@@ -12,6 +13,7 @@ function TodoItem({ title, completed, onToggle }) {
                 <input type="checkbox" checked={completed} onChange={onToggle} />
                 {title}{completed && ' ✅'}
             </label>
+            <button onClick={onDelete} style={{ marginLeft: '10px', cursor: 'pointer' }}>删除</button>
         </li>
     );
 }
@@ -22,9 +24,10 @@ export default function TodoList() {
     const toggleTodo = useTodoStore(s => s.toggleTodo);
     const setFilter = useTodoStore(s => s.setFilter);
     const todos = useTodoStore(s => s.todos);
-    const setTodos = useTodoStore(s => s.setTodos);
+    const addTodos = useTodoStore(s => s.addTodos);
     const fetchTodos = useTodoStore(s => s.fetchTodos);
-
+    const deleteTodo = useTodoStore(s => s.deleteTodo);
+    console.log(todos)
     useEffect(() => {
         fetchTodos();
     }, []);
@@ -40,26 +43,10 @@ export default function TodoList() {
                 <input type="checkbox" checked={isFilter} onChange={setFilter} />
                 过滤已完成的代办事项
             </label>
-            <form onSubmit={e => {
-                e.preventDefault();
-                const input = e.target.elements.title;
-                const title = input.value.trim();
-
-                if (title) {
-                    setTodos(todos => [
-                        ...todos,
-                        { id: todos.length + 1, title, completed: false }
-                    ]);
-                    input.value = '';
-                }
-                console.log(todos);
-            }}>
-                <input name="title" placeholder="请输入新的待办事项" />
-                <button type="submit">添加</button>
-            </form>
+            <AddTodo />
             <ul>
                 {filteredItems.map(item =>
-                    <TodoItem key={item.id} {...item} onToggle={() => toggleTodo(item.id)} />
+                    <TodoItem key={item.id} {...item} onToggle={() => toggleTodo(item.id)} onDelete={() => deleteTodo(item.id)} />
                 )}
             </ul>
             <ClearCompletedTodo />

@@ -30,5 +30,10 @@ export const useTodoStore = create((set, get) => ({
   getFilteredTodos: () => {
     const { isFilter, todos } = get();
     return isFilter ? todos.filter(t => !t.completed) : todos;
-  }
+  },
+
+  clearCompleted: () =>
+    set(state => ({
+      todos: state.todos.filter(t => !t.completed)
+    }))
 }));

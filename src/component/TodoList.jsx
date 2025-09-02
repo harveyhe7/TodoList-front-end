@@ -1,6 +1,8 @@
 import { useTodoStore } from '../stores/todoList';
 import styles from './TodoList.module.css';
 import { useEffect } from 'react';
+import ToDoListCount from './ToDoListCount.jsx'
+import ClearCompletedTodo from './ClearCompletedTodo.jsx'
 import axios from 'axios';
 function TodoItem({ title, completed, onToggle }) {
     const itemClassName = `${styles.item} ${completed ? styles.checked : ''}`;
@@ -32,7 +34,8 @@ export default function TodoList() {
     return (
         <section>
             <h1>Sally Ride 的 Todo 清单</h1>
-
+            <h1>Zustand版本</h1>
+            <ToDoListCount />
             <label>
                 <input type="checkbox" checked={isFilter} onChange={setFilter} />
                 过滤已完成的代办事项
@@ -59,6 +62,7 @@ export default function TodoList() {
                     <TodoItem key={item.id} {...item} onToggle={() => toggleTodo(item.id)} />
                 )}
             </ul>
+            <ClearCompletedTodo />
         </section>
     );
 }

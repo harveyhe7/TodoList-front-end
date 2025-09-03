@@ -32,5 +32,7 @@ jobs:
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
+          # 产物名称
           name: frontend-build-artifact
-          path: frontend-build.zip
+          # 直接指定构建输出目录的路径
+          path: dist/

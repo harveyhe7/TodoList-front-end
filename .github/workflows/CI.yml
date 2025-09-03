@@ -35,4 +35,4 @@ jobs:
           # 产物名称
           name: frontend-build-artifact
           # 直接指定构建输出目录的路径
-          path: dist/
+          path: dist
